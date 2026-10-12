@@ -26,6 +26,7 @@ type MigrationRow = {
   evidence_notes_ar: string;
   confidence: MigrationStory["confidence"];
   visualization_color: string;
+  migration_event_sources?: { migration_sources: { title: string; source_url: string | null } | null }[];
 };
 
 export async function GET() {
@@ -38,7 +39,7 @@ export async function GET() {
   }
 
   const endpoint = new URL("/rest/v1/migration_events", supabaseUrl);
-  endpoint.searchParams.set("select", "*");
+  endpoint.searchParams.set("select", "*,migration_event_sources(migration_sources(title,source_url))");
   endpoint.searchParams.set("publication_status", "eq.published");
   endpoint.searchParams.set("order", "period_start_years_before_present.desc");
 
@@ -74,6 +75,10 @@ export async function GET() {
       evidenceAr: row.evidence_notes_ar,
       confidence: row.confidence,
       color: row.visualization_color,
+      sources: (row.migration_event_sources ?? [])
+        .map((entry) => entry.migration_sources)
+        .filter((source): source is { title: string; source_url: string | null } => Boolean(source?.source_url))
+        .map((source) => ({ title: source.title, url: source.source_url as string })),
     }));
 
     return NextResponse.json({ source: "supabase", migrations });
