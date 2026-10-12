@@ -32,7 +32,7 @@ export default function Home() {
   const visibleMigrations = useMemo(() => migrations.filter((item) => {
     const layerMatch = activeLayers.includes(item.layer);
     const eraValue = era.value;
-    const timeMatch = item.periodStart >= eraValue || eraValue === 0 || (item.periodStart >= eraValue * 0.65 && item.periodEnd <= eraValue * 1.5);
+    const timeMatch = item.periodStart >= eraValue && item.periodEnd <= eraValue;
     const q = query.trim().toLowerCase();
     const searchMatch = !q || [item.title, item.titleAr, item.from.name, item.from.nameAr, item.to.name, item.to.nameAr, item.category].some((s) => s.toLowerCase().includes(q));
     return layerMatch && timeMatch && searchMatch;
