@@ -17,6 +17,7 @@ export type MigrationStory = {
   evidenceAr: string;
   confidence: "high" | "medium" | "emerging";
   color: string;
+  sources?: { title: string; url: string }[];
 };
 
 // Educational sample records, not a complete reconstruction of population movement.
