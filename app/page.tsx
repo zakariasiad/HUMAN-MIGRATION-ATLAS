@@ -1,7 +1,9 @@
 "use client";
 
+/* eslint @typescript-eslint/no-explicit-any: off -- Globe.gl exposes an untyped fluent API. */
+
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Activity, ArrowDownRight, ArrowLeftRight, BookOpen, ChevronDown, CircleHelp, Clock3, Compass, Globe2, Layers3, MapPin, Pause, Play, RotateCcw, Search, SlidersHorizontal, Sparkles, Volume2 } from "lucide-react";
+import { Activity, ArrowDownRight, ArrowLeftRight, BookOpen, ChevronDown, CircleHelp, Clock3, Compass, Globe2, Layers3, MapPin, Pause, Play, RotateCcw, Search, SlidersHorizontal, Sparkles } from "lucide-react";
 import type { MigrationStory, MigrationLayer } from "@/data/migrations";
 import { migrations, layerLabels } from "@/data/migrations";
 
@@ -22,6 +24,7 @@ export default function Home() {
   const [eraIndex, setEraIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [activeLayers, setActiveLayers] = useState<MigrationLayer[]>(["prehistoric", "historical", "modern"]);
+  const [migrationData, setMigrationData] = useState<MigrationStory[]>(migrations);
   const [selected, setSelected] = useState<MigrationStory>(migrations[0]);
   const [query, setQuery] = useState("");
   const [showLayers, setShowLayers] = useState(false);
@@ -29,14 +32,14 @@ export default function Home() {
   const ar = language === "ar";
   const era = eras[eraIndex];
 
-  const visibleMigrations = useMemo(() => migrations.filter((item) => {
+  const visibleMigrations = useMemo(() => migrationData.filter((item) => {
     const layerMatch = activeLayers.includes(item.layer);
     const eraValue = era.value;
     const timeMatch = item.periodStart >= eraValue && item.periodEnd <= eraValue;
     const q = query.trim().toLowerCase();
     const searchMatch = !q || [item.title, item.titleAr, item.from.name, item.from.nameAr, item.to.name, item.to.nameAr, item.category].some((s) => s.toLowerCase().includes(q));
     return layerMatch && timeMatch && searchMatch;
-  }), [activeLayers, era.value, query]);
+  }), [activeLayers, era.value, query, migrationData]);
 
   useEffect(() => {
     let disposed = false;
@@ -71,7 +74,7 @@ export default function Home() {
         .arcDashLength(0.45)
         .arcDashGap(0.18)
         .arcDashAnimateTime(2400)
-        .onPointClick((d: any) => { const item = migrations.find((m) => m.id === d.id); if (item) setSelected(item); });
+        .onPointClick((d: any) => { const item = migrationData.find((m) => m.id === d.id); if (item) setSelected(item); });
       globeRef.current = instance;
       instance.pointOfView({ lat: 20, lng: 18, altitude: 2.15 }, 0);
       setGlobeReady(true);
@@ -80,6 +83,18 @@ export default function Home() {
       (instance as any).__cleanup = () => window.removeEventListener("resize", resize);
     }).catch(() => setGlobeReady(false));
     return () => { disposed = true; if (instance?.__cleanup) instance.__cleanup(); if (instance?._destructor) instance._destructor(); globeRef.current = null; };
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/migrations")
+      .then((response) => response.ok ? response.json() : null)
+      .then((payload) => {
+        if (Array.isArray(payload?.migrations) && payload.migrations.length > 0) {
+          setMigrationData(payload.migrations);
+          setSelected((current) => payload.migrations.find((item: MigrationStory) => item.id === current.id) ?? payload.migrations[0]);
+        }
+      })
+      .catch(() => { /* Keep the bundled educational sample available offline. */ });
   }, []);
 
   useEffect(() => {
@@ -109,7 +124,7 @@ export default function Home() {
       <div className="brand-mark"><Globe2 size={22}/></div>
       <button className="rail-button active" aria-label="Explore atlas"><Compass size={19}/></button>
       <button className="rail-button" aria-label="Migration layers" onClick={() => setShowLayers((v) => !v)}><Layers3 size={19}/></button>
-      <button className="rail-button" aria-label="Research notes" onClick={() => setSelected(migrations[0])}><BookOpen size={19}/></button>
+      <button className="rail-button" aria-label="Research notes" onClick={() => setSelected(migrationData[0] ?? migrations[0])}><BookOpen size={19}/></button>
       <div className="rail-spacer"/>
       <button className="rail-button" aria-label="Help" title="About this prototype"><CircleHelp size={19}/></button>
       <div className="avatar">HA</div>
