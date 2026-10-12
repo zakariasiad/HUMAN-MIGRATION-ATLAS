@@ -7,7 +7,7 @@ import { Activity, ArrowDownRight, ArrowLeftRight, BookOpen, ChevronDown, Circle
 import type { MigrationStory, MigrationLayer } from "@/data/migrations";
 import { migrations, layerLabels } from "@/data/migrations";
 
-type GlobeInstance = { (element: HTMLElement): any };
+type GlobeFactory = { (): (element: HTMLElement) => any };
 const eras = [
   { value: 2000000, label: "2 million years ago", labelAr: "قبل مليوني سنة", description: "Early hominins move beyond Africa", descriptionAr: "انتشار أشباه البشر الأوائل خارج إفريقيا" },
   { value: 70000, label: "70,000 years ago", labelAr: "قبل 70 ألف سنة", description: "Modern human dispersals", descriptionAr: "انتشارات الإنسان العاقل" },
