@@ -11,8 +11,9 @@ This is an early prototype with a small, hand-curated **illustrative dataset**. 
 - Next.js App Router, React, TypeScript
 - [Globe.gl](https://globe.gl/) for the interactive WebGL globe
 - Lucide icons and responsive CSS
-- Planned: Supabase/PostgreSQL for reviewed records, sources, and editorial workflows
-- Planned: Vercel deployment
+- Supabase/PostgreSQL schema for migration events, source records, citations, and route segments (`supabase/schema.sql`)
+- `/api/migrations` reads published records from Supabase when environment variables are configured; the bundled sample remains as a fallback
+- Vercel deployment is connected to GitHub; the latest build fix is being verified
 
 ## Run locally
 
@@ -20,8 +21,13 @@ Requirements: Node.js 20.9+ and npm.
 
 ```bash
 npm install
+cp .env.example .env.local
 npm run dev
 ```
+
+The app runs in demo mode until `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` are configured. To enable database mode, create a dedicated Supabase project, run `supabase/schema.sql` in its SQL Editor, then add the project URL and publishable key to `.env.local` and the Vercel project environment. Never put a Supabase secret/service-role key in a `NEXT_PUBLIC_` variable.
+
+Only records with `publication_status = 'published'` are returned by the API. Row Level Security is enabled on all atlas tables; anonymous clients have read-only access to published records and their public source metadata.
 
 Open http://localhost:3000. Run `npm run build` to verify a production build.
 
@@ -32,7 +38,10 @@ The Earth texture currently loads from the public unpkg CDN, so an internet conn
 - `app/page.tsx` — atlas interface, timeline, filters, globe lifecycle
 - `app/globals.css` — responsive visual system
 - `app/layout.tsx` — root layout and metadata
-- `data/migrations.ts` — typed sample records and layer labels
+- `data/migrations.ts` — typed illustrative fallback records and layer labels
+- `app/api/migrations/route.ts` — published Supabase records endpoint
+- `supabase/schema.sql` — PostgreSQL schema, RLS policies, and public read grants
+- `.env.example` — local environment variable template
 
 ## Data principles
 
