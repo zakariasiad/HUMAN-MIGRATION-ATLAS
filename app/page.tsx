@@ -9,10 +9,12 @@ import { migrations, layerLabels } from "@/data/migrations";
 
 type GlobeInstance = { (element: HTMLElement): any };
 const eras = [
-  { value: 70000, label: "70,000 years ago", labelAr: "قبل 70 ألف سنة", description: "Early dispersals beyond Africa", descriptionAr: "الانتشار البشري المبكر خارج إفريقيا" },
+  { value: 2000000, label: "2 million years ago", labelAr: "قبل مليوني سنة", description: "Early hominins move beyond Africa", descriptionAr: "انتشار أشباه البشر الأوائل خارج إفريقيا" },
+  { value: 70000, label: "70,000 years ago", labelAr: "قبل 70 ألف سنة", description: "Modern human dispersals", descriptionAr: "انتشارات الإنسان العاقل" },
+  { value: 60000, label: "60,000 years ago", labelAr: "قبل 60 ألف سنة", description: "Early settlement across Sahul", descriptionAr: "الاستيطان المبكر في ساهول" },
   { value: 12000, label: "12,000 years ago", labelAr: "قبل 12 ألف سنة", description: "A changing climate and new lifeways", descriptionAr: "مناخ متغير وأنماط معيشة جديدة" },
   { value: 4000, label: "4,000 years ago", labelAr: "قبل 4 آلاف سنة", description: "Farming, cities, and long-distance networks", descriptionAr: "الزراعة والمدن وشبكات التواصل البعيدة" },
-  { value: 500, label: "500 years ago", labelAr: "قبل 500 سنة", description: "Expanding global connections", descriptionAr: "اتساع الروابط العالمية" },
+  { value: 500, label: "500 years ago", labelAr: "قبل 500 سنة", description: "Expanding global connections and forced migration", descriptionAr: "اتساع الروابط العالمية والتهجير القسري" },
   { value: 0, label: "Today", labelAr: "اليوم", description: "Migration in the contemporary world", descriptionAr: "الهجرة في العالم المعاصر" },
 ];
 const layerOrder: MigrationLayer[] = ["human-origins", "prehistoric", "historical", "modern"];
@@ -23,7 +25,7 @@ export default function Home() {
   const [language, setLanguage] = useState<"en" | "ar">("en");
   const [eraIndex, setEraIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
-  const [activeLayers, setActiveLayers] = useState<MigrationLayer[]>(["prehistoric", "historical", "modern"]);
+  const [activeLayers, setActiveLayers] = useState<MigrationLayer[]>(["human-origins", "prehistoric", "historical", "modern"]);
   const [migrationData, setMigrationData] = useState<MigrationStory[]>(migrations);
   const migrationDataRef = useRef<MigrationStory[]>(migrations);
   migrationDataRef.current = migrationData;
@@ -137,7 +139,7 @@ export default function Home() {
         <div className="top-actions"><span className="live-pill"><span className="live-dot"/> {ar ? "نموذج تفاعلي" : "INTERACTIVE PREVIEW"}</span><button className="language-button" onClick={() => setLanguage(ar ? "en" : "ar")}>{ar ? "EN  English" : "ع  العربية"}</button></div>
       </header>
 
-      <div className="page-heading"><div><div className="eyebrow"><Sparkles size={13}/> {ar ? "أطلس الزمان والمكان" : "A LIVING ATLAS OF TIME & PLACE"}</div><h1>{ar ? "رحلة البشرية" : "Humanity, in motion."}</h1><p>{ar ? "استكشف كيف تحرك البشر عبر الأرض — من الانتشار القديم إلى عالم اليوم." : "Trace the journeys that shaped us, from ancient dispersals to a connected world."}</p></div><div className="heading-stat"><span className="stat-number">300k+</span><span>{ar ? "سنوات من التاريخ البشري" : "YEARS OF HUMAN STORY"}</span></div></div>
+      <div className="page-heading"><div><div className="eyebrow"><Sparkles size={13}/> {ar ? "أطلس الزمان والمكان" : "A LIVING ATLAS OF TIME & PLACE"}</div><h1>{ar ? "رحلة البشرية" : "Humanity, in motion."}</h1><p>{ar ? "استكشف كيف تحرك البشر عبر الأرض — من الانتشار القديم إلى عالم اليوم." : "Trace the journeys that shaped us, from ancient dispersals to a connected world."}</p></div><div className="heading-stat"><span className="stat-number">2M+</span><span>{ar ? "سنوات من التاريخ البشري" : "YEARS OF HUMAN STORY"}</span></div></div>
 
       <div className="content-grid">
         <section className="map-panel">
