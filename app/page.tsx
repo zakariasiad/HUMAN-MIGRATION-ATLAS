@@ -52,7 +52,7 @@ export default function Home() {
     if (!host) return;
     import("globe.gl").then((module) => {
       if (disposed || !globeHost.current) return;
-      const Globe = (module.default ?? module) as unknown as GlobeInstance;
+      const Globe = (module.default ?? module) as unknown as GlobeFactory;
       instance = Globe()(host)
         .backgroundColor("rgba(0,0,0,0)")
         .globeImageUrl("https://unpkg.com/three-globe/example/img/earth-night.jpg")
