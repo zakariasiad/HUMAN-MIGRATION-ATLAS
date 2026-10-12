@@ -25,6 +25,8 @@ export default function Home() {
   const [playing, setPlaying] = useState(false);
   const [activeLayers, setActiveLayers] = useState<MigrationLayer[]>(["prehistoric", "historical", "modern"]);
   const [migrationData, setMigrationData] = useState<MigrationStory[]>(migrations);
+  const migrationDataRef = useRef<MigrationStory[]>(migrations);
+  migrationDataRef.current = migrationData;
   const [selected, setSelected] = useState<MigrationStory>(migrations[0]);
   const [query, setQuery] = useState("");
   const [showLayers, setShowLayers] = useState(false);
@@ -48,7 +50,7 @@ export default function Home() {
     if (!host) return;
     import("globe.gl").then((module) => {
       if (disposed || !globeHost.current) return;
-      const Globe = (module.default ?? module) as GlobeInstance;
+      const Globe = (module.default ?? module) as unknown as GlobeInstance;
       instance = Globe()(host)
         .backgroundColor("rgba(0,0,0,0)")
         .globeImageUrl("https://unpkg.com/three-globe/example/img/earth-night.jpg")
@@ -74,7 +76,7 @@ export default function Home() {
         .arcDashLength(0.45)
         .arcDashGap(0.18)
         .arcDashAnimateTime(2400)
-        .onPointClick((d: any) => { const item = migrationData.find((m) => m.id === d.id); if (item) setSelected(item); });
+        .onPointClick((d: any) => { const item = migrationDataRef.current.find((m) => m.id === d.id); if (item) setSelected(item); });
       globeRef.current = instance;
       instance.pointOfView({ lat: 20, lng: 18, altitude: 2.15 }, 0);
       setGlobeReady(true);
@@ -117,7 +119,6 @@ export default function Home() {
   const toggleLayer = (layer: MigrationLayer) => setActiveLayers((current) => current.includes(layer) ? current.filter((item) => item !== layer) : [...current, layer]);
   const title = (item: MigrationStory) => ar ? item.titleAr : item.title;
   const area = (item: MigrationStory, side: "from" | "to") => ar ? item[side].nameAr : item[side].name;
-  const setEraBySlider = (value: number) => { const nearest = eras.reduce((best, current, index) => Math.abs(current.value - value) < Math.abs(eras[best].value - value) ? index : best, 0); setEraIndex(nearest); };
 
   return <main className={`app-shell ${ar ? "rtl" : ""}`} dir={ar ? "rtl" : "ltr"}>
     <aside className="rail">
